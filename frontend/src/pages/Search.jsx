@@ -8,7 +8,7 @@ export default function Search() {
   const navigate = useNavigate();
 
   // Filter States (initialized from Search URL params)
-  const [location, setLocation] = useState(searchParams.get("location") || "Chennai");
+  const [location, setLocation] = useState(searchParams.get("location") || "");
   const [category, setCategory] = useState(searchParams.get("category") || "");
   const [date, setDate] = useState(searchParams.get("date") || "");
   const [capacity, setCapacity] = useState(searchParams.get("capacity") || "");
