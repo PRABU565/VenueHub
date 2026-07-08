@@ -1,29 +1,60 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../services/api";
-import { Search, MapPin, Calendar, Users, Heart, Star, Sparkles, Building, Landmark, ShieldAlert, Utensils, Gamepad2, Waves, Flower2 } from "lucide-react";
-import heroImg from "../assets/hero.png";
+import { Search, MapPin, ChevronDown, Flame, CalendarDays, Star, TrendingUp, Sparkles, Heart } from "lucide-react";
+import heroImg from "../assets/hero.png"; // We can keep or remove this
 
 export default function Home() {
   const navigate = useNavigate();
   const [venues, setVenues] = useState([]);
   const [location, setLocation] = useState("Chennai");
-  const [category, setCategory] = useState("");
-  const [date, setDate] = useState("");
   const [loading, setLoading] = useState(true);
 
-  // FAQ Accordion states
-  const [openFaq, setOpenFaq] = useState(null);
+  // Klook-style promotional banners
+  const promos = [
+    { title: "Wedding Season Offers", subtitle: "Up to 30% Off on Premium Halls", bg: "bg-gradient-to-r from-orange-400 to-red-500" },
+    { title: "Gaming Offers", subtitle: "Flat ₹500 OFF Weekend Pass", bg: "bg-gradient-to-r from-blue-500 to-indigo-600" },
+    { title: "Spa Packages", subtitle: "Buy 1 Get 1 Free Sessions", bg: "bg-gradient-to-r from-emerald-400 to-teal-500" },
+  ];
+
+  const ongoingDeals = [
+    { title: "20% OFF Party Hall", code: "PARTY20", img: "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=500&q=80" },
+    { title: "10% OFF Restaurant", code: "FOOD10", img: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=500&q=80" },
+    { title: "Flat ₹500 OFF Gaming", code: "GAME500", img: "https://images.unsplash.com/photo-1511512578047-dfb367046420?w=500&q=80" },
+    { title: "Weekend Swimming Pass", code: "SWIMWND", img: "https://images.unsplash.com/photo-1576013551627-0cc20b96c2a7?w=500&q=80" },
+    { title: "Spa Combo Offer", code: "RELAX", img: "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=500&q=80" },
+  ];
+
+  const upcomingDeals = [
+    { title: "Wedding Expo", date: "Coming this Weekend" },
+    { title: "Gaming Tournament", date: "Coming this Weekend" },
+    { title: "Food Festival", date: "Coming this Weekend" },
+    { title: "Pool Party", date: "Coming this Weekend" },
+    { title: "Kids Carnival", date: "Coming this Weekend" },
+  ];
+
+  const mainCategories = [
+    { name: "Marriage Halls", color: "bg-pink-100 text-pink-600" },
+    { name: "Party Halls", color: "bg-purple-100 text-purple-600" },
+    { name: "Restaurants", color: "bg-orange-100 text-orange-600" },
+    { name: "Gaming", color: "bg-blue-100 text-blue-600" },
+    { name: "Swimming", color: "bg-cyan-100 text-cyan-600" },
+    { name: "Spa & Massage", color: "bg-emerald-100 text-emerald-600" },
+    { name: "Birthday Venues", color: "bg-yellow-100 text-yellow-600" },
+    { name: "Events", color: "bg-red-100 text-red-600" },
+  ];
+
+  const browseCategories = [
+    "Wedding", "Birthday", "Corporate", "College", "Gaming", "Restaurants", 
+    "Swimming", "Massage", "Kids Activities", "Weekend Plans", "Special Events", 
+    "Live Shows", "Festivals", "Outdoor Activities"
+  ];
 
   useEffect(() => {
     const fetchFeatured = async () => {
       try {
         const res = await api.get("/venues");
-        // Sort by rating desc and take top 3
-        const sorted = res.data
-          .sort((a, b) => b.rating - a.rating)
-          .slice(0, 3);
-        setVenues(sorted);
+        setVenues(res.data);
       } catch (err) {
         console.error("Error loading featured venues:", err.message);
       } finally {
@@ -33,248 +64,174 @@ export default function Home() {
     fetchFeatured();
   }, []);
 
-  const handleSearchSubmit = (e) => {
-    e.preventDefault();
-    const params = new URLSearchParams();
-    if (location) params.append("location", location);
-    if (category) params.append("category", category);
-    if (date) params.append("date", date);
-    navigate(`/search?${params.toString()}`);
-  };
-
-  const selectCategory = (catName) => {
-    navigate(`/search?category=${encodeURIComponent(catName)}`);
-  };
-
-  const faqData = [
-    {
-      q: "How does VenueHub guarantee no double-bookings?",
-      a: "When a user confirms a booking and processes payment, our system instantly pulls that date out of the venue's available list. The slot is locked and becomes unavailable to all other searchers in real time.",
-    },
-    {
-      q: "What types of venues can I find on VenueHub?",
-      a: "We list everything from grand Marriage Halls and Party Halls to dining Restaurants, gaming arenas, relaxing spas, and swimming pools.",
-    },
-    {
-      q: "Can I cancel a booking and get a refund?",
-      a: "Yes, bookings can be cancelled through your User Dashboard. Depending on the venue owner's policy, the date is pushed back to the public pool and a simulated refund is credited.",
-    },
-  ];
-
-  const categoryIcons = {
-    "Party Hall": <Sparkles size={24} className="text-pink-400" />,
-    "Marriage Hall": <Landmark size={24} className="text-amber-400" />,
-    "Restaurant": <Utensils size={24} className="text-red-400" />,
-    "Gaming": <Gamepad2 size={24} className="text-blue-400" />,
-    "Spa & Massage": <Flower2 size={24} className="text-teal-400" />,
-    "Swimming": <Waves size={24} className="text-emerald-400" />,
+  const handleSearchClick = () => {
+    navigate('/search');
   };
 
   return (
-    <div className="w-full pb-16">
-      {/* 1. HERO SECTION */}
-      <section className="relative px-4 max-w-7xl mx-auto">
-        <div className="absolute top-10 left-1/4 w-72 h-72 bg-brand-600/10 rounded-full blur-3xl -z-10 animate-pulse" />
-        <div className="absolute top-20 right-1/4 w-72 h-72 bg-emerald-600/5 rounded-full blur-3xl -z-10" />
-
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center pt-16 pb-12 md:pt-24 md:pb-16">
-          {/* Text and Badge */}
-          <div className="lg:col-span-7 text-center lg:text-left flex flex-col items-center lg:items-start">
-            <div className="inline-flex items-center gap-1.5 bg-brand-950/50 border border-brand-500/20 text-brand-300 text-xs font-semibold px-4 py-1.5 rounded-full mb-6 backdrop-blur-sm">
-              <Sparkles size={12} className="text-brand-400" />
-              The Smarter Way to Book Event Spaces
-            </div>
-
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold font-display leading-[1.15] bg-gradient-to-r from-white via-slate-100 to-slate-400 bg-clip-text text-transparent">
-              Find the Perfect Space for <br />
-              <span className="bg-gradient-to-r from-brand-400 to-indigo-400 bg-clip-text text-transparent">Your Next Big Event</span>
-            </h1>
-
-            <p className="mt-6 text-base md:text-lg text-slate-400 font-medium max-w-2xl">
-              Compare Chennai's premium wedding palaces, party halls, dining restaurants, wellness spas, gaming hubs, and swimming pools with transparent calendars.
-            </p>
-          </div>
-
-          {/* Floating Original Image */}
-          <div className="lg:col-span-5 flex justify-center relative">
-            {/* Ambient glow background */}
-            <div className="absolute w-64 h-64 rounded-full bg-brand-500/15 filter blur-3xl animate-pulse top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -z-10" />
-            <img
-              src={heroImg}
-              alt="VenueHub original graphics"
-              className="w-64 md:w-80 max-w-full h-auto object-contain animate-float drop-shadow-[0_15px_35px_rgba(139,92,246,0.25)]"
-            />
+    <div className="w-full pb-24 bg-white">
+      {/* 1. Mobile-style Header & Search (Top Area) */}
+      <div className="px-4 pt-4 pb-6 bg-gradient-to-b from-orange-50 to-white">
+        <div className="flex items-center justify-between mb-4 md:hidden">
+          <div className="flex items-center gap-1">
+            <MapPin size={18} className="text-primary" />
+            <span className="font-bold text-darkText">{location}</span>
+            <ChevronDown size={16} className="text-gray-500" />
           </div>
         </div>
 
-        {/* 2. OVERLAPPING SEARCH BAR */}
-        <div className="mt-8 max-w-5xl mx-auto">
-          <form
-            onSubmit={handleSearchSubmit}
-            className="glass-card p-4 md:p-6 border-slate-800/80 shadow-2xl flex flex-col md:flex-row gap-4 items-center"
-          >
-            {/* Location Field */}
-            <div className="flex-1 w-full text-left space-y-1">
-              <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider pl-1 flex items-center gap-1">
-                <MapPin size={10} /> Location
-              </label>
-              <input
-                type="text"
-                value={location}
-                onChange={(e) => setLocation(e.target.value)}
-                placeholder="Area in Chennai (e.g. Adyar, ECR)"
-                className="glass-input bg-slate-950/40 border-slate-800/60"
-              />
-            </div>
-
-            {/* Category Field */}
-            <div className="flex-1 w-full text-left space-y-1">
-              <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider pl-1 flex items-center gap-1">
-                <Building size={10} /> Category
-              </label>
-              <select
-                value={category}
-                onChange={(e) => setCategory(e.target.value)}
-                className="glass-input bg-slate-950/40 border-slate-800/60 text-slate-300"
-              >
-                <option value="">All Categories</option>
-                <option value="Party Hall">Party Hall</option>
-                <option value="Marriage Hall">Marriage Hall</option>
-                <option value="Restaurant">Restaurant</option>
-                <option value="Gaming">Gaming</option>
-                <option value="Spa & Massage">Spa & Massage</option>
-                <option value="Swimming">Swimming</option>
-              </select>
-            </div>
-
-            {/* Date Field */}
-            <div className="flex-1 w-full text-left space-y-1">
-              <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider pl-1 flex items-center gap-1">
-                <Calendar size={10} /> Target Date
-              </label>
-              <input
-                type="date"
-                value={date}
-                min={new Date().toISOString().split("T")[0]}
-                onChange={(e) => setDate(e.target.value)}
-                className="glass-input bg-slate-950/40 border-slate-800/60 text-slate-300"
-              />
-            </div>
-
-            {/* Search Action Button */}
-            <div className="w-full md:w-auto md:self-end pt-1">
-              <button type="submit" className="btn-primary py-3 w-full md:px-8">
-                <Search size={16} /> Search
-              </button>
-            </div>
-          </form>
+        {/* Search Bar matching prompt requirement */}
+        <div 
+          onClick={handleSearchClick}
+          className="bg-white border border-gray-200 rounded-full py-3 px-4 shadow-sm flex items-center gap-3 cursor-text md:hidden"
+        >
+          <Search size={20} className="text-primary" />
+          <span className="text-gray-400 text-sm font-medium">Search Marriage Hall, Gaming, Restaurant...</span>
         </div>
-      </section>
+      </div>
 
-      {/* 3. CATEGORIES QUICK GRID */}
-      <section className="max-w-7xl mx-auto px-4 py-12">
-        <div className="text-center mb-10">
-          <h2 className="text-2xl md:text-3xl font-extrabold font-display text-white">Explore by Category</h2>
-          <p className="text-xs text-slate-400 mt-2 font-semibold">Select an accommodation type to view active listings</p>
-        </div>
-
-        <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-4">
-          {Object.keys(categoryIcons).map((catName) => (
-            <button
-              key={catName}
-              onClick={() => selectCategory(catName)}
-              className="glass-card p-5 border-slate-900 flex flex-col items-center gap-3 hover:border-brand-500/30 hover:-translate-y-1 hover:shadow-brand-glow transition-all"
-            >
-              <div className="w-12 h-12 bg-slate-950/60 rounded-xl flex items-center justify-center border border-slate-800/40">
-                {categoryIcons[catName]}
+      {/* 2. Promotional Banner Slider */}
+      <section className="px-4 mb-8 max-w-7xl mx-auto">
+        <div className="flex overflow-x-auto hide-scrollbar gap-4 snap-x pb-4">
+          {promos.map((promo, idx) => (
+            <div key={idx} className={`min-w-[280px] md:min-w-[400px] h-32 md:h-48 rounded-2xl ${promo.bg} p-5 flex flex-col justify-center snap-center text-white shadow-md relative overflow-hidden`}>
+              <h3 className="text-lg md:text-2xl font-bold mb-1 relative z-10">{promo.title}</h3>
+              <p className="text-sm md:text-base opacity-90 relative z-10">{promo.subtitle}</p>
+              <div className="absolute -right-4 -bottom-4 opacity-20">
+                <Sparkles size={100} />
               </div>
-              <span className="text-xs font-bold text-slate-300 text-center tracking-wide">{catName}</span>
-            </button>
+            </div>
           ))}
         </div>
       </section>
 
-      {/* 4. STATISTICS */}
-      <section className="bg-slate-950/40 border-y border-slate-900 py-12 px-4 mb-16 backdrop-blur-sm">
-        <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-          <div>
-            <p className="text-3xl md:text-4xl font-extrabold font-display bg-gradient-to-r from-brand-400 to-indigo-400 bg-clip-text text-transparent">7+</p>
-            <p className="text-xs text-slate-400 mt-1 uppercase tracking-wider font-bold">Categories Supported</p>
+      {/* 3. Main Categories Grid (Large colorful cards) */}
+      <section className="px-4 mb-10 max-w-7xl mx-auto">
+        <div className="grid grid-cols-4 md:grid-cols-8 gap-3 md:gap-4">
+          {mainCategories.map((cat, idx) => (
+            <div 
+              key={idx} 
+              onClick={() => navigate(`/categories?select=${cat.name}`)}
+              className="flex flex-col items-center gap-2 cursor-pointer group"
+            >
+              <div className={`w-14 h-14 md:w-20 md:h-20 rounded-2xl ${cat.color} flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform`}>
+                 <Sparkles size={24} />
+              </div>
+              <span className="text-[10px] md:text-xs font-semibold text-center leading-tight text-gray-700 group-hover:text-primary">
+                {cat.name}
+              </span>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* 4. Ongoing Deals (Klook Style) */}
+      <section className="px-4 mb-10 max-w-7xl mx-auto">
+        <div className="flex items-center gap-2 mb-4">
+          <Flame size={20} className="text-red-500 fill-red-500" />
+          <h2 className="text-lg md:text-xl font-bold text-darkText">Ongoing Deals</h2>
+        </div>
+        <div className="flex overflow-x-auto hide-scrollbar gap-4 pb-4 snap-x">
+          {ongoingDeals.map((deal, idx) => (
+            <div key={idx} className="min-w-[160px] md:min-w-[220px] rounded-xl overflow-hidden snap-start shadow-sm border border-gray-100 cursor-pointer group">
+              <div className="h-24 md:h-32 w-full overflow-hidden relative">
+                <img src={deal.img} alt={deal.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                <div className="absolute top-2 left-2 bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded">PROMO</div>
+              </div>
+              <div className="p-3 bg-white">
+                <h3 className="text-sm font-bold text-gray-800 line-clamp-1">{deal.title}</h3>
+                <p className="text-xs text-primary font-semibold mt-1 bg-orange-50 inline-block px-2 py-1 rounded border border-orange-100">{deal.code}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* 5. Trending This Week (Horizontal Cards) */}
+      <section className="px-4 mb-10 bg-gray-50 py-8 border-y border-gray-100">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex items-center gap-2 mb-4">
+            <TrendingUp size={20} className="text-secondary" />
+            <h2 className="text-lg md:text-xl font-bold text-darkText">Trending This Week</h2>
           </div>
-          <div>
-            <p className="text-3xl md:text-4xl font-extrabold font-display bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent">100%</p>
-            <p className="text-xs text-slate-400 mt-1 uppercase tracking-wider font-bold">Real-time Calendars</p>
-          </div>
-          <div>
-            <p className="text-3xl md:text-4xl font-extrabold font-display bg-gradient-to-r from-pink-400 to-rose-400 bg-clip-text text-transparent">500+</p>
-            <p className="text-xs text-slate-400 mt-1 uppercase tracking-wider font-bold">Verified Hall bookings</p>
-          </div>
-          <div>
-            <p className="text-3xl md:text-4xl font-extrabold font-display bg-gradient-to-r from-amber-400 to-orange-400 bg-clip-text text-transparent">0%</p>
-            <p className="text-xs text-slate-400 mt-1 uppercase tracking-wider font-bold">Hidden Booking Fees</p>
+          <div className="flex overflow-x-auto hide-scrollbar gap-4 pb-4">
+            {["Top Wedding Halls", "Top Restaurants", "Best Gaming Zones", "Most Booked Swimming Pools", "Popular Spa"].map((title, idx) => (
+              <div key={idx} className="min-w-[200px] md:min-w-[280px] bg-white p-4 rounded-xl shadow-sm border border-gray-100 cursor-pointer hover:border-secondary transition-colors">
+                <h3 className="font-bold text-gray-800">{title}</h3>
+                <p className="text-xs text-gray-500 mt-1 flex items-center gap-1">View collection <ChevronDown size={12} className="-rotate-90"/></p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* 5. FEATURED PLACES */}
-      <section className="max-w-7xl mx-auto px-4 mb-16">
-        <div className="flex justify-between items-end mb-10">
-          <div>
-            <h2 className="text-2xl md:text-3xl font-extrabold font-display text-white">Top Rated Venues</h2>
-            <p className="text-xs text-slate-400 mt-1 font-semibold">Handpicked locations backed by verified client reviews</p>
-          </div>
-          <button onClick={() => navigate("/search")} className="text-brand-400 hover:text-brand-300 text-xs font-bold transition-all flex items-center gap-1">
-            See All Venues →
-          </button>
+      {/* 6. Browse By Category */}
+      <section className="px-4 mb-10 max-w-7xl mx-auto">
+        <h2 className="text-lg md:text-xl font-bold text-darkText mb-4">Browse By Category</h2>
+        <div className="flex flex-wrap gap-2">
+          {browseCategories.map((cat, idx) => (
+            <span key={idx} onClick={() => navigate(`/categories?select=${cat}`)} className="px-4 py-2 bg-gray-100 hover:bg-primary hover:text-white text-gray-700 text-sm font-medium rounded-full cursor-pointer transition-colors border border-gray-200">
+              {cat}
+            </span>
+          ))}
         </div>
+      </section>
+
+      {/* 7. Upcoming Deals */}
+      <section className="px-4 mb-10 max-w-7xl mx-auto">
+        <div className="flex items-center gap-2 mb-4">
+          <CalendarDays size={20} className="text-purple-500" />
+          <h2 className="text-lg md:text-xl font-bold text-darkText">Upcoming Deals</h2>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+          {upcomingDeals.map((deal, idx) => (
+            <div key={idx} className="bg-lightGray p-4 rounded-xl border border-gray-100 text-center flex flex-col justify-center items-center h-28 hover:shadow-md transition-shadow">
+              <h3 className="font-bold text-gray-800 text-sm">{deal.title}</h3>
+              <p className="text-xs text-primary font-semibold mt-2 bg-white px-2 py-1 rounded-full border border-orange-100">{deal.date}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* 8. Recommended For You (AI Recommendation) */}
+      <section className="px-4 mb-10 max-w-7xl mx-auto">
+        <div className="flex items-center gap-2 mb-1">
+          <Star size={20} className="text-yellow-500 fill-yellow-500" />
+          <h2 className="text-lg md:text-xl font-bold text-darkText">Recommended For You</h2>
+        </div>
+        <p className="text-xs text-gray-500 mb-4 font-medium flex items-center gap-1">
+           <Sparkles size={12} className="text-secondary" /> AI Recommendation based on your budget & nearby places
+        </p>
 
         {loading ? (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {[1, 2, 3].map((n) => (
-              <div key={n} className="glass-card h-80 animate-pulse border-slate-900" />
-            ))}
-          </div>
+           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+             {[1, 2, 3].map(n => <div key={n} className="h-64 bg-gray-100 animate-pulse rounded-xl" />)}
+           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {venues.map((venue) => (
-              <div
-                key={venue._id}
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+            {venues.slice(0, 4).map((venue) => (
+              <div 
+                key={venue._id} 
                 onClick={() => navigate(`/venue/${venue._id}`)}
-                className="glass-card overflow-hidden border-slate-900/60 hover:border-brand-500/20 hover:-translate-y-1 hover:shadow-lg transition-all cursor-pointer group"
+                className="modern-card overflow-hidden group cursor-pointer"
               >
-                {/* Photo frame */}
-                <div className="relative h-48 overflow-hidden bg-slate-950">
-                  <img
-                    src={venue.images[0]}
-                    alt={venue.venueName}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
-                  <div className="absolute top-3 right-3 bg-slate-950/85 backdrop-blur-md px-2.5 py-1 rounded-lg border border-slate-800/80 flex items-center gap-1 text-[10px] font-bold text-amber-400">
-                    <Star size={10} fill="currentColor" /> {venue.rating || "New"}
-                  </div>
-                  <div className="absolute bottom-3 left-3 bg-brand-600/90 text-white font-semibold text-[9px] px-2 py-0.5 rounded uppercase tracking-wider">
-                    {venue.category}
-                  </div>
+                <div className="relative h-40 overflow-hidden bg-gray-200">
+                  <img src={venue.images?.[0]} alt={venue.venueName} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  <button className="absolute top-2 right-2 p-1.5 bg-white/80 backdrop-blur rounded-full text-gray-400 hover:text-red-500">
+                    <Heart size={16} />
+                  </button>
                 </div>
-
-                {/* Info block */}
-                <div className="p-5">
-                  <h3 className="text-base font-bold text-slate-100 line-clamp-1 group-hover:text-brand-400 transition-colors">
-                    {venue.venueName}
-                  </h3>
-                  <p className="text-xs text-slate-400 flex items-center gap-1 mt-1 font-medium">
-                    <MapPin size={12} className="text-slate-500" /> {venue.location}
-                  </p>
-
-                  <div className="flex items-center justify-between mt-5 pt-3 border-t border-slate-900/60">
-                    <div className="flex items-center gap-1 text-slate-300 text-xs font-semibold">
-                      <Users size={12} className="text-slate-500" /> Max: {venue.capacity}
+                <div className="p-3">
+                  <h3 className="font-bold text-sm text-darkText line-clamp-1">{venue.venueName}</h3>
+                  <div className="flex items-center gap-1 text-[10px] text-gray-500 mt-1">
+                    <MapPin size={10} /> {venue.location}
+                  </div>
+                  <div className="flex justify-between items-end mt-3">
+                    <div className="flex items-center gap-1 bg-green-50 text-success px-1.5 py-0.5 rounded text-[10px] font-bold">
+                      <Star size={10} fill="currentColor" /> {venue.rating || 4.5}
                     </div>
                     <div className="text-right">
-                      <span className="text-slate-500 text-[10px] block leading-none font-semibold">
-                        {venue.category === "Gaming" ? "Price per Hour" : venue.category === "Restaurant" ? "Table Reservation" : venue.category === "Swimming" ? "Day Pass / Rent" : venue.category === "Spa & Massage" ? "Starting Price" : "Price per Day"}
-                      </span>
-                      <span className="text-sm font-extrabold text-brand-400">₹{venue.price.toLocaleString()}</span>
+                      <p className="text-xs font-extrabold text-primary">₹{venue.price?.toLocaleString() || 5000}</p>
                     </div>
                   </div>
                 </div>
@@ -284,32 +241,6 @@ export default function Home() {
         )}
       </section>
 
-      {/* 6. FAQS ACCORDION */}
-      <section className="max-w-3xl mx-auto px-4 mt-24">
-        <div className="text-center mb-10">
-          <h2 className="text-2xl md:text-3xl font-extrabold font-display text-white">Frequently Asked Questions</h2>
-          <p className="text-xs text-slate-400 mt-2 font-semibold">Clear details explaining how the booking architecture performs</p>
-        </div>
-
-        <div className="space-y-4">
-          {faqData.map((faq, idx) => (
-            <div key={idx} className="glass-card border-slate-900/50 overflow-hidden">
-              <button
-                onClick={() => setOpenFaq(openFaq === idx ? null : idx)}
-                className="w-full px-6 py-4 text-left flex justify-between items-center hover:bg-slate-900/30 transition-colors"
-              >
-                <span className="text-sm font-semibold text-slate-200">{faq.q}</span>
-                <span className="text-slate-400 font-bold text-sm">{openFaq === idx ? "−" : "+"}</span>
-              </button>
-              {openFaq === idx && (
-                <div className="px-6 pb-4 pt-1 text-xs text-slate-400 leading-relaxed border-t border-slate-950/20 bg-slate-950/20">
-                  {faq.a}
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
-      </section>
     </div>
   );
 }

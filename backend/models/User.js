@@ -21,6 +21,17 @@ const UserSchema = new mongoose.Schema(
       enum: ["user", "owner", "admin"],
       default: "user",
     },
+    wishlist: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Venue"
+    }],
+    rewardPoints: {
+      type: Number,
+      default: 0,
+    },
+    coupons: [{
+      type: String,
+    }],
   },
   { timestamps: true }
 );

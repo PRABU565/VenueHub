@@ -5,6 +5,7 @@ import { AuthProvider, useAuth } from "./context/AuthContext";
 // Component files
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
+import BottomNavigation from "./components/BottomNavigation";
 
 // Page files
 import Home from "./pages/Home";
@@ -12,10 +13,14 @@ import Search from "./pages/Search";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import VenueDetails from "./pages/VenueDetails";
-import UserDashboard from "./pages/UserDashboard";
+import UserDashboard from "./pages/UserDashboard"; // keep if used or replace with Account
 import OwnerDashboard from "./pages/OwnerDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
 import BudgetPlanner from "./pages/BudgetPlanner";
+import Wishlist from "./pages/Wishlist";
+import Categories from "./pages/Categories";
+import Account from "./pages/Account";
+import BookingPage from "./pages/BookingPage";
 
 // Auth Gate for Guest Customers
 const ProtectedUserRoute = ({ children }) => {
@@ -58,6 +63,8 @@ function App() {
               <Route path="/register" element={<Register />} />
               <Route path="/venue/:id" element={<VenueDetails />} />
               <Route path="/budget-planner" element={<BudgetPlanner />} />
+              <Route path="/wishlist" element={<Wishlist />} />
+              <Route path="/categories" element={<Categories />} />
 
               {/* Guarded Paths */}
               <Route
@@ -65,6 +72,22 @@ function App() {
                 element={
                   <ProtectedUserRoute>
                     <UserDashboard />
+                  </ProtectedUserRoute>
+                }
+              />
+              <Route
+                path="/account"
+                element={
+                  <ProtectedUserRoute>
+                    <Account />
+                  </ProtectedUserRoute>
+                }
+              />
+              <Route
+                path="/booking/:id"
+                element={
+                  <ProtectedUserRoute>
+                    <BookingPage />
                   </ProtectedUserRoute>
                 }
               />
@@ -91,6 +114,7 @@ function App() {
           </main>
 
           <Footer />
+          <BottomNavigation />
         </div>
       </Router>
     </AuthProvider>

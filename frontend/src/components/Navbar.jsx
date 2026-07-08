@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { Menu, X, LogOut, User, LayoutDashboard, Search, Home, Sparkles } from "lucide-react";
+import { LogOut, User, LayoutDashboard, Search, Home, MapPin, Menu, X } from "lucide-react";
 
 export default function Navbar() {
   const { user, logout } = useAuth();
@@ -15,90 +15,87 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="sticky top-0 z-40 w-full bg-brand-950/80 backdrop-blur-md border-b border-brand-900/30">
+    <nav className="sticky top-0 z-40 w-full bg-white shadow-sm border-b border-gray-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          {/* Logo brand */}
+          {/* Logo */}
           <Link to="/" className="flex items-center gap-2" onClick={() => setMobileMenuOpen(false)}>
-            <div className="bg-gradient-to-br from-brand-500 to-indigo-600 w-9 h-9 rounded-xl flex items-center justify-center font-display font-extrabold text-brand-100 text-lg tracking-wider shadow-brand-glow">
+            <div className="bg-primary w-9 h-9 rounded-xl flex items-center justify-center font-display font-extrabold text-white text-lg tracking-wider">
               VH
             </div>
-            <span className="font-display font-bold text-xl tracking-tight bg-gradient-to-r from-brand-200 via-brand-300 to-indigo-400 bg-clip-text text-transparent">
+            <span className="font-display font-bold text-xl tracking-tight text-secondary">
               VenueHub
             </span>
           </Link>
 
-          {/* Desktop Nav Items */}
-          <div className="hidden md:flex items-center gap-6">
-            <Link to="/" className="text-slate-300 hover:text-brand-300 transition-colors flex items-center gap-1.5 text-sm font-medium">
-              <Home size={16} /> Home
-            </Link>
-            <Link to="/search" className="text-slate-300 hover:text-brand-300 transition-colors flex items-center gap-1.5 text-sm font-medium">
-              <Search size={16} /> Find Venues
-            </Link>
-            <Link to="/budget-planner" className="text-slate-300 hover:text-brand-300 transition-colors flex items-center gap-1.5 text-sm font-medium">
-              <Sparkles size={16} className="text-brand-400 animate-pulse" /> Budget Planner
-            </Link>
-
-            {user && (
-              <>
-                <Link to="/bookings" className="text-slate-300 hover:text-brand-300 transition-colors text-sm font-medium">
-                  My Bookings
-                </Link>
-
-                {user.role === "owner" && (
-                  <Link to="/owner" className="text-brand-400 hover:text-brand-300 transition-colors flex items-center gap-1.5 text-sm font-medium">
-                    <LayoutDashboard size={16} /> Owner Panel
-                  </Link>
-                )}
-
-                {user.role === "admin" && (
-                  <Link to="/admin" className="text-accent-400 hover:text-accent-300 transition-colors flex items-center gap-1.5 text-sm font-medium">
-                    <LayoutDashboard size={16} /> Admin Panel
-                  </Link>
-                )}
-              </>
-            )}
+          {/* Location / Search (Desktop) */}
+          <div className="hidden md:flex items-center bg-gray-100 rounded-full px-4 py-2 flex-grow max-w-md mx-8">
+            <Search size={18} className="text-gray-400" />
+            <input 
+              type="text" 
+              placeholder="Search Marriage Hall, Gaming, Restaurant..." 
+              className="bg-transparent border-none outline-none text-sm w-full ml-2 text-darkText placeholder-gray-400"
+            />
+            <div className="h-4 w-px bg-gray-300 mx-2"></div>
+            <div className="flex items-center text-sm font-medium text-darkText whitespace-nowrap cursor-pointer hover:text-primary transition-colors">
+              <MapPin size={16} className="mr-1 text-primary" />
+              Chennai
+            </div>
           </div>
 
-          {/* Desktop User Panel */}
+          {/* Desktop Nav Items */}
           <div className="hidden md:flex items-center gap-4">
+            {user && user.role === "owner" && (
+              <Link to="/owner" className="text-gray-600 hover:text-primary transition-colors flex items-center gap-1.5 text-sm font-medium">
+                <LayoutDashboard size={16} /> Owner Panel
+              </Link>
+            )}
+
+            {user && user.role === "admin" && (
+              <Link to="/admin" className="text-gray-600 hover:text-primary transition-colors flex items-center gap-1.5 text-sm font-medium">
+                <LayoutDashboard size={16} /> Admin Panel
+              </Link>
+            )}
+
             {user ? (
-              <div className="flex items-center gap-3 border-l border-slate-800 pl-4">
+              <div className="flex items-center gap-3 border-l border-gray-200 pl-4 ml-2">
                 <div className="text-right">
-                  <p className="text-xs font-semibold text-brand-100">{user.name}</p>
-                  <p className="text-[10px] text-slate-400 capitalize">{user.role}</p>
+                  <p className="text-sm font-semibold text-darkText">{user.name}</p>
+                  <p className="text-xs text-primary capitalize">{user.role}</p>
                 </div>
-                <div className="bg-slate-900 p-2 rounded-lg text-slate-400 border border-slate-800">
-                  <User size={16} />
-                </div>
+                <Link to="/account" className="bg-lightGray p-2 rounded-full text-gray-600 hover:bg-gray-200 hover:text-primary transition-colors">
+                  <User size={18} />
+                </Link>
                 <button
                   onClick={handleLogoutClick}
-                  className="text-slate-400 hover:text-red-400 hover:bg-slate-900/50 p-2 rounded-lg transition-all border border-transparent hover:border-red-500/20"
+                  className="text-gray-400 hover:text-red-500 hover:bg-red-50 p-2 rounded-full transition-colors"
                   title="Logout"
                 >
-                  <LogOut size={16} />
+                  <LogOut size={18} />
                 </button>
               </div>
             ) : (
-              <div className="flex items-center gap-3">
-                <Link to="/login" className="btn-secondary py-1.5 px-4 text-xs">
+              <div className="flex items-center gap-3 ml-2">
+                <Link to="/login" className="btn-secondary py-1.5 px-5 text-sm rounded-full">
                   Login
                 </Link>
-                <Link to="/register" className="btn-primary py-1.5 px-4 text-xs">
-                  Sign Up
+                <Link to="/register" className="btn-primary py-1.5 px-5 text-sm rounded-full">
+                  Register
                 </Link>
               </div>
             )}
           </div>
 
           {/* Mobile Menu Button */}
-          <div className="md:hidden">
+          <div className="md:hidden flex items-center gap-3">
+            {!user && (
+               <Link to="/login" className="text-primary text-sm font-semibold">Login</Link>
+            )}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="text-slate-400 hover:text-brand-300 p-2 rounded-lg hover:bg-brand-900/30"
+              className="text-gray-600 hover:text-primary p-2 rounded-lg"
             >
-              {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+              {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
           </div>
         </div>
@@ -106,43 +103,23 @@ export default function Navbar() {
 
       {/* Mobile Drawer */}
       {mobileMenuOpen && (
-        <div className="md:hidden border-t border-brand-900/30 bg-brand-950/95 backdrop-blur-lg px-4 pt-2 pb-6 space-y-4">
-          <Link
-            to="/"
-            onClick={() => setMobileMenuOpen(false)}
-            className="block text-slate-300 hover:text-brand-300 py-2 text-sm font-medium"
-          >
-            Home
-          </Link>
-          <Link
-            to="/search"
-            onClick={() => setMobileMenuOpen(false)}
-            className="block text-slate-300 hover:text-brand-300 py-2 text-sm font-medium"
-          >
-            Find Venues
-          </Link>
-          <Link
-            to="/budget-planner"
-            onClick={() => setMobileMenuOpen(false)}
-            className="block text-brand-300 hover:text-brand-400 py-2 text-sm font-medium"
-          >
-            ★ Budget Planner
-          </Link>
+        <div className="md:hidden border-t border-gray-100 bg-white px-4 pt-2 pb-6 space-y-4 shadow-lg absolute w-full z-50">
+          <div className="flex items-center bg-gray-100 rounded-full px-4 py-2 mb-4">
+            <Search size={18} className="text-gray-400" />
+            <input 
+              type="text" 
+              placeholder="Search venues..." 
+              className="bg-transparent border-none outline-none text-sm w-full ml-2 text-darkText placeholder-gray-400"
+            />
+          </div>
 
           {user && (
             <>
-              <Link
-                to="/bookings"
-                onClick={() => setMobileMenuOpen(false)}
-                className="block text-slate-300 hover:text-brand-300 py-2 text-sm font-medium"
-              >
-                My Bookings
-              </Link>
               {user.role === "owner" && (
                 <Link
                   to="/owner"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="block text-brand-400 hover:text-brand-300 py-2 text-sm font-medium"
+                  className="block text-gray-600 hover:text-primary py-2 text-sm font-medium"
                 >
                   Owner Panel
                 </Link>
@@ -151,7 +128,7 @@ export default function Navbar() {
                 <Link
                   to="/admin"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="block text-accent-400 hover:text-accent-300 py-2 text-sm font-medium"
+                  className="block text-gray-600 hover:text-primary py-2 text-sm font-medium"
                 >
                   Admin Panel
                 </Link>
@@ -159,24 +136,20 @@ export default function Navbar() {
             </>
           )}
 
-          {user ? (
-            <div className="border-t border-brand-900/30 pt-4 flex flex-col gap-3">
-              <div>
-                <p className="text-sm font-semibold text-brand-100">{user.name}</p>
-                <p className="text-xs text-slate-400 capitalize">{user.role}</p>
+          {user && (
+            <div className="border-t border-gray-100 pt-4 flex flex-col gap-3">
+              <div className="flex items-center gap-3">
+                <div className="bg-lightGray p-3 rounded-full text-primary">
+                  <User size={20} />
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-darkText">{user.name}</p>
+                  <p className="text-xs text-primary capitalize">{user.role}</p>
+                </div>
               </div>
-              <button onClick={handleLogoutClick} className="btn-secondary w-full text-red-400 flex items-center justify-center gap-2 py-2">
+              <button onClick={handleLogoutClick} className="btn-secondary bg-red-50 text-red-500 hover:bg-red-100 border-none w-full flex items-center justify-center gap-2 py-2 mt-2">
                 <LogOut size={16} /> Logout
               </button>
-            </div>
-          ) : (
-            <div className="border-t border-brand-900/30 pt-4 grid grid-cols-2 gap-3">
-              <Link to="/login" onClick={() => setMobileMenuOpen(false)} className="btn-secondary text-center py-2">
-                Login
-              </Link>
-              <Link to="/register" onClick={() => setMobileMenuOpen(false)} className="btn-primary text-center py-2">
-                Register
-              </Link>
             </div>
           )}
         </div>

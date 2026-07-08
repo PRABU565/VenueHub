@@ -43,6 +43,14 @@ const BookingSchema = new mongoose.Schema(
       status: { type: String, default: "Pending" },
       method: { type: String, default: "Simulated Card" },
     },
+    earnedPoints: {
+      type: Number,
+      default: 0,
+    },
+    couponApplied: {
+      type: String,
+      default: "",
+    },
   },
   { timestamps: true }
 );

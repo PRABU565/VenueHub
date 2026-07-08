@@ -10,14 +10,6 @@ const VenueSchema = new mongoose.Schema(
     category: {
       type: String,
       required: true,
-      enum: [
-        "Party Hall",
-        "Marriage Hall",
-        "Restaurant",
-        "Gaming",
-        "Spa & Massage",
-        "Swimming",
-      ],
     },
     location: {
       type: String,
