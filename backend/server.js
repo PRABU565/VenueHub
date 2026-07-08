@@ -23,6 +23,17 @@ app.use((req, res, next) => {
   next();
 });
 
+// Middleware to ensure DB connection in serverless environment
+app.use(async (req, res, next) => {
+  if (!global.dbMode) {
+    await connectDB();
+    if (global.dbMode === "memory" && global.memoryDb.Venue.length === 0) {
+      await seedDatabase();
+    }
+  }
+  next();
+});
+
 // Mount Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/venues", venueRoutes);
@@ -30,28 +41,31 @@ app.use("/api/bookings", bookingRoutes);
 app.use("/api/admin", adminRoutes);
 
 // Health check endpoint
-app.get("/health", (req, res) => {
+app.get("/api/health", (req, res) => {
   res.status(200).json({ status: "OK", database: global.dbMode, time: new Date() });
 });
 
 const PORT = process.env.PORT || 5000;
 
-// Start Server and connect to Database
-const startServer = async () => {
-  try {
-    await connectDB();
-    await seedDatabase();
-    
-    app.listen(PORT, () => {
-      console.log(`=========================================`);
-      console.log(`🚀 SERVER RUNNING ON PORT: http://localhost:${PORT}`);
-      console.log(`📂 DB Mode: [${global.dbMode.toUpperCase()}]`);
-      console.log(`=========================================`);
-    });
-  } catch (error) {
-    console.error("Failed to start the backend server:", error.message);
-    process.exit(1);
-  }
-};
+// Start Server locally if not in Vercel
+if (process.env.NODE_ENV !== "production" && !process.env.VERCEL) {
+  const startServer = async () => {
+    try {
+      await connectDB();
+      await seedDatabase();
+      
+      app.listen(PORT, () => {
+        console.log(`=========================================`);
+        console.log(`🚀 SERVER RUNNING ON PORT: http://localhost:${PORT}`);
+        console.log(`📂 DB Mode: [${global.dbMode.toUpperCase()}]`);
+        console.log(`=========================================`);
+      });
+    } catch (error) {
+      console.error("Failed to start the backend server:", error.message);
+      process.exit(1);
+    }
+  };
+  startServer();
+}
 
-startServer();
+module.exports = app;

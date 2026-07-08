@@ -29,13 +29,14 @@ export default function Navbar() {
           </Link>
 
           {/* Location / Search (Desktop) */}
-          <div className="hidden md:flex items-center bg-gray-100 rounded-full px-4 py-2 flex-grow max-w-md mx-8">
+          <div 
+            onClick={() => navigate('/search')}
+            className="hidden md:flex items-center bg-gray-100 rounded-full px-4 py-2 flex-grow max-w-md mx-8 cursor-text hover:bg-gray-200 transition-colors cursor-pointer"
+          >
             <Search size={18} className="text-gray-400" />
-            <input 
-              type="text" 
-              placeholder="Search Marriage Hall, Gaming, Restaurant..." 
-              className="bg-transparent border-none outline-none text-sm w-full ml-2 text-darkText placeholder-gray-400"
-            />
+            <div className="text-sm w-full ml-2 text-gray-400 text-left truncate">
+              Search Marriage Hall, Gaming, Restaurant...
+            </div>
             <div className="h-4 w-px bg-gray-300 mx-2"></div>
             <div className="flex items-center text-sm font-medium text-darkText whitespace-nowrap cursor-pointer hover:text-primary transition-colors">
               <MapPin size={16} className="mr-1 text-primary" />
@@ -104,13 +105,17 @@ export default function Navbar() {
       {/* Mobile Drawer */}
       {mobileMenuOpen && (
         <div className="md:hidden border-t border-gray-100 bg-white px-4 pt-2 pb-6 space-y-4 shadow-lg absolute w-full z-50">
-          <div className="flex items-center bg-gray-100 rounded-full px-4 py-2 mb-4">
+          <div 
+            onClick={() => {
+              setMobileMenuOpen(false);
+              navigate('/search');
+            }}
+            className="flex items-center bg-gray-100 rounded-full px-4 py-2 mb-4 cursor-pointer hover:bg-gray-200 transition-colors"
+          >
             <Search size={18} className="text-gray-400" />
-            <input 
-              type="text" 
-              placeholder="Search venues..." 
-              className="bg-transparent border-none outline-none text-sm w-full ml-2 text-darkText placeholder-gray-400"
-            />
+            <div className="text-sm w-full ml-2 text-gray-400">
+              Search venues...
+            </div>
           </div>
 
           {user && (
