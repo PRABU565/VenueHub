@@ -276,6 +276,20 @@ export default function OwnerDashboard() {
                 <label className="text-xs font-bold text-gray-500">Capacity / Pax *</label>
                 <input type="number" required value={capacity} onChange={e => setCapacity(e.target.value)} className="modern-input" />
               </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-gray-500">Full Address</label>
+                  <input type="text" value={address} onChange={e => setAddress(e.target.value)} placeholder="e.g. 123 Main St, Area" className="modern-input" />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-gray-500">Google Maps Link</label>
+                  <input type="url" value={googleMapsLink} onChange={e => setGoogleMapsLink(e.target.value)} placeholder="https://maps.app.goo.gl/..." className="modern-input" />
+                </div>
+              </div>
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-gray-500">Description</label>
+                <textarea value={description} onChange={e => setDescription(e.target.value)} placeholder="Describe your venue..." className="modern-input min-h-[80px]" />
+              </div>
               <div className="space-y-1">
                 <label className="text-xs font-bold text-gray-500">Image URLs (comma separated)</label>
                 <input type="text" value={imageInput} onChange={e => setImageInput(e.target.value)} placeholder="https://..." className="modern-input" />
